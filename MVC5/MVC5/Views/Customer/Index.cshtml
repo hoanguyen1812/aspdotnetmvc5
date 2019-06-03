@@ -1,0 +1,54 @@
+﻿@using System.Web.UI.HtmlControls
+@model IEnumerable<MVC5.Models.Customer>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (!Model.Any())
+{
+    <text>There is no customer to display</text>
+}
+<table id="customers"class="table table-bordered table-hover">
+
+    <tr>
+        <th>Customer</th>
+        <th>Membership Type</th>
+        <th>Delete</th>
+    </tr>
+    @foreach (var customer in Model)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink(customer.Name,"Edit", new {id = customer.Id})
+                
+            </td>
+            <td>@customer.MembershipType.Name</td>
+            <td>
+                <button data-customer-id="@customer.Id" class="btn-link js-delete">Delete</button>
+            </td>
+        </tr>
+    }
+
+</table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+            $("#customers .js-delete").on("click",
+                function () {
+                    var button = $(this);
+                    if (confirm("Are you sure to delete this customer?")) {
+                        $.ajax({
+                            url: "/api/customers/" + button.attr("data-customer-id"),
+                            method: "DELETE",
+                            success: function () {
+                                button.parents("tr").remove();
+                            }
+                        });
+                    };
+                });
+        });
+    </script>
+}
