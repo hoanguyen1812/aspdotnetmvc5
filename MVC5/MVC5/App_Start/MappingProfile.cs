@@ -14,6 +14,8 @@ namespace MVC5.App_Start
                     .ForMember(c => c.Id, opt => opt.Ignore());
                 cfg.CreateMap<Movie, MovieDto>()
                     .ForMember(m => m.Id, opt => opt.Ignore());
+                cfg.CreateMap<MembershipType, MembershipTypeDto>();
+                cfg.CreateMap<Genre, GenreDto>();
             });
 
             config.CreateMapper();

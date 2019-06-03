@@ -67,8 +67,9 @@ namespace MVC5.Controllers
         // GET: Customer
         public ActionResult Index()
         {
-            var customers = _context.Customers.Include(a => a.MembershipType).ToList();
-            return View(customers);
+            //var customers = _context.Customers.Include(a => a.MembershipType).ToList();
+            //return View(customers);
+            return View();
         }
 
         public ActionResult ViewCustomer(int id)

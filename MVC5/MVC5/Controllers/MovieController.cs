@@ -50,6 +50,7 @@ namespace MVC5.Controllers
         {
             var movies = _content.Movies.Include(a => a.Genre).ToList();
             return View(movies);
+            //return View();
         }
 
         public ActionResult Detail(int id)

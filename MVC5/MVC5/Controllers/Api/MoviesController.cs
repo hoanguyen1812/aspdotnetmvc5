@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -20,9 +21,10 @@ namespace MVC5.Controllers.Api
         }
 
         // GET /api/movies
-        public IEnumerable<MovieDto> GetMovies()
+        public IHttpActionResult GetMovies()
         {
-            return _context.Movies.ToList().Select(Mapper.Map<Movie, MovieDto>);
+            var movies = _context.Movies.Include(a=>a.Genre).ToList().Select(Mapper.Map<Movie, MovieDto>);
+            return Ok(movies);
         }
 
         // GET /api/movies/1
@@ -70,7 +72,7 @@ namespace MVC5.Controllers.Api
 
         // DELETE /api/movies/1
         [HttpDelete]
-        public void DeleteMovie(int id)
+        public IHttpActionResult DeleteMovie(int id)
         {
             var movie = _context.Movies.SingleOrDefault(a => a.Id == id);
             if (movie == null)
@@ -78,6 +80,8 @@ namespace MVC5.Controllers.Api
 
             _context.Movies.Remove(movie);
             _context.SaveChanges();
+
+            return Ok();
         }
     }
 }

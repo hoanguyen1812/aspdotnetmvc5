@@ -5,30 +5,33 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@if (!Model.Any())
+@*@if (!Model.Any())
 {
     <text>There is no customer to display</text>
-}
-<table id="customers"class="table table-bordered table-hover">
-
-    <tr>
-        <th>Customer</th>
-        <th>Membership Type</th>
-        <th>Delete</th>
-    </tr>
-    @foreach (var customer in Model)
-    {
+}*@
+<table id="customers" class="table table-bordered table-hover">
+    <thead>
         <tr>
-            <td>
-                @Html.ActionLink(customer.Name,"Edit", new {id = customer.Id})
-                
-            </td>
-            <td>@customer.MembershipType.Name</td>
-            <td>
-                <button data-customer-id="@customer.Id" class="btn-link js-delete">Delete</button>
-            </td>
+            <th>Customer</th>
+            <th>Membership Type</th>
+            <th>Delete</th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @*@foreach (var customer in Model)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(customer.Name, "Edit", new { id = customer.Id })
+
+                </td>
+                <td>@customer.MembershipType.Name</td>
+                <td>
+                    <button data-customer-id="@customer.Id" class="btn-link js-delete">Delete</button>
+                </td>
+            </tr>
+        }*@
+    </tbody>
 
 </table>
 
@@ -36,19 +39,48 @@
 {
     <script>
         $(document).ready(function() {
-            $("#customers .js-delete").on("click",
-                function () {
-                    var button = $(this);
-                    if (confirm("Are you sure to delete this customer?")) {
-                        $.ajax({
-                            url: "/api/customers/" + button.attr("data-customer-id"),
-                            method: "DELETE",
-                            success: function () {
-                                button.parents("tr").remove();
-                            }
-                        });
-                    };
-                });
+            var table = $("#customers").DataTable({
+                ajax: {
+                    url: "/api/customers",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name",
+                        render: function(data, type, customer) {
+                            return "<a href='/customer/edit/" + customer.id + "'>" + customer.name + "</a>";
+                        }
+                    },
+                    {
+                        data: "membershipType.name"
+                    },
+                    {
+                        data: "id",
+                        render: function(data) {
+                            return "<button class='btn-link js-delete' data-customer-id=" + data + ">Delete</button>";
+                        }
+                    }
+            ]
         });
+        $("#customers").on("click",
+            ".js-delete",
+            function() {
+                var button = $(this);
+                bootbox.confirm("Are you sure to delete this customer?",
+                    function(result) {
+                        if (result) {
+                            $.ajax({
+                                url: "/api/customers/" + button.attr("data-customer-id"),
+                                method: "DELETE",
+                                success: function () {
+                                    table.row(button.parents("tr"))
+                                        .remove()
+                                        .draw();
+                                }
+                            });
+                        }
+                    });
+            });
+    });
     </script>
 }
